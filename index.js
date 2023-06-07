@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const port = 3000;
 const {dataDieuXe} = require('./dieuxe.js');
 const {xulyDataDieuXe} = require('./help/functions.js');
+require('dotenv').config();
 
 var low = require("lowdb");
 var FileSync = require("lowdb/adapters/FileSync");
@@ -54,6 +55,6 @@ app.get("/users/search", (req, res) => {
     users: matchedUsers,
   });
 });
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+app.listen(process.env.PORT || 3000, function(){
+  console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
 });

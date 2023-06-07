@@ -1,2 +1,27 @@
-h1 SSS #{title}
-a(href="/users") Users list
+style
+    include ./style.css
+h1 lliilliill
+form(action="/tinh", method="post")
+    div.wrap-form 
+        div
+            label 6kg: 
+            input(type="number", name="6kg")
+        div
+            label 12kg: 
+            input(type="number", name="12kg")
+        div
+            label 12.5kg: 
+            input(type="number", name="12.5kg")
+        div
+            label 45kg: 
+            input(type="number", name="45kg")
+        div
+            label 50kg: 
+            input(type="number", name="50kg")
+        div
+            button Tính
+
+    if tongTrongLuong
+        p #{tongTrongLuong}
+    else
+        p nothing

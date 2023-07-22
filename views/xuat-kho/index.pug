@@ -1,0 +1,37 @@
+
+html
+    head
+        link(href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet' integrity='sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM' crossorigin='anonymous')
+        script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js' integrity='sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz' crossorigin='anonymous')
+        style
+            include ./style.css
+    body
+        div.container
+            table.table.table-condensed 
+                thead 
+                    tr 
+                        th(rowspan=2) Khu vực
+                        th(colspan=5) Loại bình 
+                        th(rowspan=2) Tổng số lượng
+                        th(rowspan=2) Số bình đã quét
+                        th(rowspan=2) Số lượng còn lại
+                    tr 
+
+                        th 6kg
+                        th 12kg
+                        th 12.5kg
+                        th 45kg
+                        th 50kg
+
+                tbody 
+                    each order in orders 
+                        tr
+                            td #{order['dia_chi_dai_ly']} 
+                            each val in order['details']
+                                td #{val}
+                            td #{order['tong_so_luong']}
+                            td #{order['tong_so_binh_quet']}
+                            td #{order['tong_so_luong'] - order['tong_so_binh_quet']}
+
+
+

@@ -5,7 +5,10 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const port = 3000;
+const http = require('http')
+http.createServer(app).listen(80);
 const { dataDieuXe } = require("./dieuxe.js");
+
 const {
   xulyDataDieuXe,
   gopDonDaiLy,

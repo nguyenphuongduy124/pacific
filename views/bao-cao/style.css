@@ -1,0 +1,32 @@
+/* tbody > tr:nth-child(even) td {
+  background-color: rgb(188, 187, 187);
+} */
+.table-condensed > thead > tr > th,
+.table-condensed > tbody > tr > th,
+.table-condensed > tfoot > tr > th,
+.table-condensed > thead > tr > td,
+.table-condensed > tbody > tr > td,
+.table-condensed > tfoot > tr > td {
+  padding: 3px;
+  font-size: 12px;
+}
+.middle {
+  vertical-align: middle;
+  text-align: center;
+  border-right: 1px solid #636363;
+  font-weight: bold;
+  font-size: 15px !important;
+}
+.firstDaiLy {
+  border-top: 2px solid #000;
+}
+td.info-dai-ly span {
+  display: block;
+}
+td.info-dai-ly .ten-dai-ly {
+  font-weight: bold;
+}
+td.info-dai-ly .dia-chi {
+  padding-left: 20px;
+  font-style: italic;
+}

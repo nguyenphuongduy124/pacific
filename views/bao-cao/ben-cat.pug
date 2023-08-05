@@ -1,0 +1,81 @@
+- var banBuon = data["Bán buôn"];
+- var vanChuyenGiuaChiNhanh = data["Vận chuyển giữa các chi nhánh"];
+- var vanChuyenDoiVoBinh = data["Vận chuyển đổi vỏ bình"];
+- var vanChuyenChietNap = data["Vận chuyển đi chiết nạp"];
+- var xeKhach = data["Xe khách"];
+- var binhDangKy = data["Bình đăng ký"];
+html
+    head
+        link(href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet' integrity='sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM' crossorigin='anonymous')
+        script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js' integrity='sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz' crossorigin='anonymous')
+        style
+            include ./style.css
+    body
+        div.container
+            div(class="ban-buon")
+                table.table.table-condensed 
+                    tr
+                        th(colspan=2) Bán buôn 
+                    tr 
+                        td Số hóa đơn
+                        td #{banBuon["Số hóa đơn"]}
+                    tr 
+                        td Số điều phối
+                        td #{banBuon["Số điều phối"]}
+            div(class="van-chuyen-giua-chi-nhanh")
+                table.table.table-condensed 
+                    tr
+                        th(colspan=3) Vận chuyển giữa các chi nhánh
+                    tr
+                        th STT
+                        th Tên 
+                        th Số lượng
+                    each element, index in vanChuyenGiuaChiNhanh
+                        tr 
+                            td #{index + 1}
+                            td #{element[2]}
+                            td #{element[5]}
+            div(class="van-chuyen-doi-vo-binh")
+                table.table.table-condensed 
+                    tr
+                        th(colspan=3) Vận chuyển đổi vỏ bình
+                    tr
+                        th STT
+                        th Tên 
+                        th Số lượng
+                    each element, index in vanChuyenDoiVoBinh
+                        tr 
+                            td #{index + 1}
+                            td #{element[2]}
+                            td #{element[5]}
+            div(class="van-chuyen-chiet-nap")
+                table.table.table-condensed 
+                    tr
+                        th(colspan=3) Vận chuyển đi chiết nạp
+                    tr
+                        th STT
+                        th Tên 
+                        th Số lượng
+                    each element, index in vanChuyenChietNap
+                        tr 
+                            td #{index + 1}
+                            td #{element[2]}
+                            td #{element[5]}
+            div(class="xe-khach")
+                table.table.table-condensed 
+                    tr
+                        th(colspan=2) Xe khách
+                    each val, key in xeKhach
+                        tr
+                            td #{key}
+                            td #{val}
+            div(class="binh-dang-ky")
+                table.table.table-condensed 
+                    - var totalCylinder = 0
+                    tr
+                        th(colspan=2) Bình đăng ký
+                    each val, key in binhDangKy
+                        tr
+                            td #{key}
+                            td #{val}
+                    

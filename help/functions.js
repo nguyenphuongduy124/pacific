@@ -146,7 +146,6 @@ function gopKhachHangTrungTen(danh_sach_don_hang) {
   return result;
 }
 
-
 function gopDonTheoKhuVuc(danh_sach_don_hang) {
   let ten_khu_vuc_arr = [];
   let clone_dsdh = _.cloneDeep(danh_sach_don_hang);
@@ -188,4 +187,17 @@ function gopDonTheoKhuVuc(danh_sach_don_hang) {
   return result;
 }
 
-module.exports = { xulyDataDieuXe, gopDonDaiLy, gopKhachHangTrungTen, gopDonTheoKhuVuc };
+async function getTextInElement(page, selector) {
+  let element = await page.$(selector);
+  let value = await page.evaluate(el => el.textContent.trim().replace(": ", ''), element);
+  return value;
+}
+
+
+module.exports = {
+  xulyDataDieuXe,
+  gopDonDaiLy,
+  gopKhachHangTrungTen,
+  gopDonTheoKhuVuc,
+  getTextInElement
+};

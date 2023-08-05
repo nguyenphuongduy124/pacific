@@ -6,12 +6,15 @@ const app = express();
 const bodyParser = require("body-parser");
 const port = 3000;
 const { dataDieuXe } = require("./dieuxe.js");
-
+// routes
+const baoCao = require("./routes/bao-cao.js");
+const puppeteer = require("puppeteer");
 const {
   xulyDataDieuXe,
   gopDonDaiLy,
   gopKhachHangTrungTen,
   gopDonTheoKhuVuc,
+  getTextInElement,
 } = require("./help/functions.js");
 
 require("dotenv").config();
@@ -253,7 +256,7 @@ app.get("/xuat-kho", (req, res) => {
           // danh
           let danh_sach_don_hang = [];
           _.forEach(ma_phieu_arr, function (so_phieu) {
-            
+            console.log(so_phieu);
             let tong_don_theo_so_phieu = _.filter(cloneDonHang, function (o) {
               // or remove
               return o["Mã số phiếu"] == so_phieu;
@@ -281,6 +284,37 @@ app.get("/xuat-kho", (req, res) => {
           });
         });
     });
+});
+
+app.use("/bao-cao", baoCao);
+app.get("/test", (req, res) => {
+  (async () => {
+    // Launch the browser and open a new blank page
+    const browser = await puppeteer.launch({
+      headless: false,
+      args: [
+        "--start-maximized", // you can also use '--start-fullscreen'
+      ],
+    });
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1080, height: 1024 });
+    // Navigate the page to a URL
+    await page.goto("https://admin.arigatogas.com/");
+    // await page.click("div.selected-lang");
+    // await page.click("div.lang-menu .menu ul li:nth-child(2)");
+    let v = await page.$eval("div.lang-menu img", element =>
+      element.getAttribute("src")
+    );
+    if (v === "/assets/img/japan-flag.png") {
+      await page.click("div.selected-lang");
+      await page.click("div.lang-menu .menu ul li:nth-child(2)");
+    }
+
+    await page.type("#userName", "vobinh");
+    await page.type("#password", "Vobinh@123");
+    // await page.click("button[type=submit]");
+    // await page.waitForSelector("div.menu-bar > ul > li:nth-child(3)");
+  })();
 });
 app.listen(process.env.PORT || 3000, function () {
   console.log(

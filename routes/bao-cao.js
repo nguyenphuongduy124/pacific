@@ -10,7 +10,7 @@ router.get("/", function (req, res) {
 
 // About page route.
 router.get("/ben-cat", function (req, res) {
-  const date = "05/08/2023";
+  const date = "09/08/2023";
   (async () => {
     // Launch the browser and open a new blank page
     const browser = await puppeteer.launch({
@@ -36,6 +36,7 @@ router.get("/ben-cat", function (req, res) {
 
     await page.type("#userName", "vobinh");
     await page.type("#password", "Vobinh@123");
+    await page.click("div.p-checkbox");
     await page.click("button[type=submit]");
     await page.waitForSelector("div.menu-bar > ul > li:nth-child(3)");
 

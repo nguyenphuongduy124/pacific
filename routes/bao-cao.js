@@ -51,9 +51,8 @@ router.get("/ben-cat", function (req, res) {
       }
     }
 
-
-    await page.click("form.grid > div:nth-child(2) div.p-dropdown");
     // chọn trạng thái đơn hàng
+    await page.click("form.grid > div:nth-child(2) div.p-dropdown");
     await page.click(
       "form.grid > div:nth-child(2) div.p-dropdown ul .p-element:nth-child(3)"
     );
@@ -260,83 +259,42 @@ router.get("/ben-cat", function (req, res) {
     // END chọn ngày
 
     // Tìm đại lý xe khách
-
-    let list = [
-      "TĐL-003CÔNG TY TNHH MỘT THÀNH VIÊN HÙNG HÀO PHÁT",
-      "ĐL-196CÔNG TY TNHH THƯƠNG MẠI KHÍ HÓA LỎNG HƯỚNG DƯƠNG",
-      "TĐL-006CÔNG TY TNHH DẦU KHÍ CHÍNH SỸ",
-      "ĐL-093CỬA HÀNG BÁN LẺ LPG CHAI GAS TRÚC",
-      "ĐL-413TÂN THÁI DƯƠNG",
-      "ĐL-004CÔNG TY TNHH MỘT THÀNH VIÊN THƯƠNG MẠI - DỊCH VỤ VĂN THANH",
-    ];
-    let resultDaiLyXeKhach = {};
-    // Hủy chọn trạng thái
+    // chọn trạng thái đơn hàng
+    await page.click("form.border-1 > div:nth-child(1) > div:nth-child(4) div.p-dropdown");
     await page.click(
-      "div.form-group form > div:first-child > div:nth-child(4) i.p-dropdown-clear-icon"
+      "form.border-1 > div:nth-child(1) > div:nth-child(4) div.p-dropdown ul .p-element:nth-child(2)"
     );
-    await page.click(
-      "div.form-group form > div:first-child > div:first-child > div:last-child"
-    );
-    for (let index = 0; index < list.length; index++) {
-      const element = list[index];
-      // click vào ô input đại lý
-
-      console.log(element);
-      let inputDaily = await page.$(
-        "div.form-group form > div:first-child > div:first-child > div:last-child div.p-dropdown div:last-child > div:first-child input"
-      );
-      if (!inputDaily) {
-        await page.click(
-          "div.form-group form > div:first-child > div:first-child > div:last-child"
-        );
-        inputDaily = await page.$(
-          "div.form-group form > div:first-child > div:first-child > div:last-child div.p-dropdown div:last-child > div:first-child input"
-        );
-      }
-      await inputDaily.type(element);
-      await page.waitForSelector(
-        "div.form-group form > div:first-child > div:first-child > div:last-child div.p-dropdown div:last-child > div:last-child ul li"
-      );
-      await page.click(
-        "div.form-group form > div:first-child > div:first-child > div:last-child div.p-dropdown div:last-child > div:last-child ul li"
-      );
-      // click tìm kiếm
-      await page.click(
-        "div.form-group form > div:last-child > div:last-child button"
-      );
-      // chờ loading
-      flag = true;
+    // click tìm kiếm
+    await page.click("form.border-1 button.button-air-water");
+    // chờ loading
+    flag = true;
+    load = (await page.$("div.spinner")) || "";
+    while (flag) {
       load = (await page.$("div.spinner")) || "";
-      while (flag) {
-        load = (await page.$("div.spinner")) || "";
-        if (!load) {
-          flag = false;
-        }
-      }
-      const dataFromTable = await page.evaluate(() => {
-        const tds = Array.from(
-          document.querySelectorAll(
-            "div.card > div:last-child > div:last-child table tbody tr td"
-          )
-        );
-        return tds.map(td => td.innerText);
-      });
-      let chunk_dataFromTable = _.chunk(dataFromTable, 15);
-      resultDaiLyXeKhach[element] = chunk_dataFromTable.length;
-      // clear INPUT Đại lý
-      await page.click(
-        "div.form-group form > div:first-child > div:first-child > div:last-child"
-      );
-      let inputValueDaiLy = await page.$eval(
-        "div.form-group form > div:first-child > div:first-child > div:last-child div.p-dropdown div:last-child > div:first-child input",
-        el => el.value
-      );
-
-      await inputDaily.focus();
-      for (let i = 0; i < inputValueDaiLy.length; i++) {
-        await page.keyboard.press("Backspace");
+      if (!load) {
+        flag = false;
       }
     }
+    // lấy danh sách đơn hàng
+    const dai_ly_orders = await page.evaluate(() => {
+      const tds = Array.from(
+        document.querySelectorAll(
+          "table.p-datatable-table tr td"
+        )
+      );
+      return tds.map(td => td.innerText);
+    });
+    let chunk_dai_ly_orders = _.chunk(
+      dai_ly_orders,
+      15
+    );
+    // lọc đại lý có công ty giao hàng khác. (cột thứ 8)
+    let filter_chunk_dai_ly_orders = _.filter(chunk_dai_ly_orders, function (item) {
+      return item[7].length > 0
+    })
+    let filter_chunk_dai_ly_orders_sorted = _.sortBy(filter_chunk_dai_ly_orders, function (item) {
+      return item[2];
+    })
 
     // lấy dữ liệu số lượng bình đăng ký
     let so_luong_binh_dang_ky = {};
@@ -497,7 +455,106 @@ router.get("/ben-cat", function (req, res) {
     let so_luong_binh_dang_ky_tai_kiem_dinh =
       str_so_luong_binh_dang_ky_tai_kiem_dinh_return.match(/\d+/g)[2];
 
-    console.log(so_luong_binh_dang_ky_tai_kiem_dinh)
+    // lấy số lượng nhập kho từ sản xuất
+    await page.goto('https://admin.arigatogas.com/gas-cylinders/list-inout-slip')
+    // chờ loading
+    flag = true;
+    load = (await page.$("div.spinner")) || "";
+    while (flag) {
+      load = (await page.$("div.spinner")) || "";
+      if (!load) {
+        flag = false;
+      }
+    }
+    // chọn lý do sản xuất
+    await page.click("form.border-1 > div > div:first-child > div:first-child div div.p-dropdown");
+    await page.click(
+      "form.border-1 > div > div:first-child > div:first-child div div.p-dropdown ul .p-element:nth-child(1)"
+    );
+
+    // START chọn ngày sản xuất
+    let inputDateFromSX = await page.$(
+      "form.grid > div:first-child > div:nth-child(2) div.custom > div:nth-child(1) input"
+    );
+    // clear INPUT
+    let inputValueDateFromSX = await page.$eval(
+      "form.grid > div:first-child > div:nth-child(2) div.custom > div:nth-child(1) input",
+      el => el.value
+    );
+    await inputDateFromSX.focus();
+    for (let i = 0; i < inputValueDateFromSX.length; i++) {
+      await page.keyboard.press("Backspace");
+    }
+    await inputDateFromSX.type(date);
+
+    let inputDateEndSX = await page.$(
+      "form.grid > div:first-child > div:nth-child(2) div.custom > div:nth-child(3) input"
+    );
+    // clear INPUT
+    let inputValueDateEndSX = await page.$eval(
+      "form.grid > div:first-child > div:nth-child(2) div.custom > div:nth-child(3) input",
+      el => el.value
+    );
+    await inputDateEndSX.focus();
+    for (let i = 0; i < inputValueDateEndSX.length; i++) {
+      await page.keyboard.press("Backspace");
+    }
+    await inputDateEndSX.type(date);
+    // END chọn ngày
+
+    // chọn loại vỏ bình "mới"
+    await page.click("form.border-1 > div > div:first-child > div:nth-child(3) div div.p-dropdown");
+    await page.click(
+      "form.border-1 > div > div:first-child > div:nth-child(3) div div.p-dropdown ul .p-element:nth-child(1)"
+    );
+    // click tìm kiếm
+    await page.click("form.grid button.button-air-water");
+
+    // chờ loading
+    flag = true;
+    load = (await page.$("div.spinner")) || "";
+    while (flag) {
+      load = (await page.$("div.spinner")) || "";
+      if (!load) {
+        flag = false;
+      }
+    }
+    // lấy số lượng nhập kho bình mới
+    await page.waitForSelector('table tbody tr')
+    let str_so_luong_nhap_kho_binh_moi_return = await getTextInElement(
+      page,
+      ".report-page div label"
+    );
+    let so_luong_nhap_kho_binh_moi =
+      str_so_luong_nhap_kho_binh_moi_return.match(/\d+/g)[2];
+    console.log(so_luong_nhap_kho_binh_moi);
+
+    // chọn loại vỏ bình "phổ thông"
+    await page.click("form.border-1 > div > div:first-child > div:nth-child(3) div div.p-dropdown");
+    await page.click(
+      "form.border-1 > div > div:first-child > div:nth-child(3) div div.p-dropdown ul .p-element:nth-child(2)"
+    );
+    // click tìm kiếm
+    await page.click("form.grid button.button-air-water");
+
+    // chờ loading
+    flag = true;
+    load = (await page.$("div.spinner")) || "";
+    while (flag) {
+      load = (await page.$("div.spinner")) || "";
+      if (!load) {
+        flag = false;
+      }
+    }
+    // lấy số lượng nhập kho bình phổ thông
+    await page.waitForSelector('table tbody tr')
+    let str_so_luong_nhap_kho_binh_pho_thong_return = await getTextInElement(
+      page,
+      ".report-page div label"
+    );
+    let so_luong_nhap_kho_binh_pho_thong =
+      str_so_luong_nhap_kho_binh_pho_thong_return.match(/\d+/g)[2];
+    console.log(so_luong_nhap_kho_binh_pho_thong);
     await browser.close();
     let don_hang = {
       [so_hoa_don]: Number(value_so_hoa_don) - so_luong_don_giua_cac_chi_nhanh - so_luong_don_di_chiet_nap - so_luong_don_doi_vo_binh,
@@ -509,15 +566,18 @@ router.get("/ben-cat", function (req, res) {
         "Vận chuyển giữa các chi nhánh": chunk_van_chuyen_giua_chi_nhanh,
         "Vận chuyển đổi vỏ bình": chunk_van_chuyen_doi_vo_binh,
         "Vận chuyển đi chiết nạp": chunk_van_chuyen_di_chiet_nap,
-        "Xe khách": resultDaiLyXeKhach,
+        "Xe khách": filter_chunk_dai_ly_orders_sorted,
         "Bình đăng ký": {
           "Bình mới": so_luong_binh_moi,
           "Bình phổ thông": so_luong_binh_pho_thong,
           "Bình tái chế": so_luong_binh_tai_che,
-          "Số lượng bình tái kiểm định": so_luong_binh_dang_ky_tai_kiem_dinh
+          "Số lượng bình tái kiểm định": so_luong_binh_dang_ky_tai_kiem_dinh,
+          "Nhập kho vỏ mới": so_luong_nhap_kho_binh_moi,
+          "Nhập kho vỏ phổ thông": so_luong_nhap_kho_binh_pho_thong
         },
       },
     });
+
   })();
 });
 

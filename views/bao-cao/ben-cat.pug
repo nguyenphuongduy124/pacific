@@ -64,11 +64,14 @@ html
             div(class="xe-khach")
                 table.table.table-condensed 
                     tr
-                        th(colspan=2) Xe khách
+                        th STT
+                        th Tên 
+                        th Số lượng
                     each val, key in xeKhach
                         tr
-                            td #{key}
-                            td #{val}
+                            td #{key + 1}
+                            td #{val[2]}
+                            td #{val[9]}
             div(class="binh-dang-ky")
                 table.table.table-condensed 
                     - var totalCylinder = 0

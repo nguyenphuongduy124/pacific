@@ -8,6 +8,7 @@ const port = 3000;
 const { dataDieuXe } = require("./dieuxe.js");
 // routes
 const baoCao = require("./routes/bao-cao.js");
+const fixCylinders = require("./routes/fix-cylinders.js");
 const puppeteer = require("puppeteer");
 const {
   xulyDataDieuXe,
@@ -287,6 +288,7 @@ app.get("/xuat-kho", (req, res) => {
 });
 
 app.use("/bao-cao", baoCao);
+app.use("/fix-cylinders", fixCylinders);
 app.get("/test", (req, res) => {
   (async () => {
     // Launch the browser and open a new blank page

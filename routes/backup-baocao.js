@@ -51,6 +51,10 @@ router.get("/ben-cat", function (req, res) {
       }
     }
 
+    // click chọn bán buôn
+    await page.click(
+      "form.grid > div:nth-child(2) > div:nth-child(3) > .p-element:nth-child(1)"
+    );
 
     await page.click("form.grid > div:nth-child(2) div.p-dropdown");
     // chọn trạng thái đơn hàng
@@ -119,10 +123,17 @@ router.get("/ben-cat", function (req, res) {
       "div:nth-child(1) span:nth-child(2) > label:nth-child(2)"
     );
 
-
+    let don_hang = {
+      [so_hoa_don]: value_so_hoa_don,
+      [so_dieu_phoi]: value_so_dieu_phoi,
+    };
 
     // START Vận chuyển giữa các chi nhánh
-
+    // hủy chọn bán buôn 
+    await page.click(
+      "form.grid > div:nth-child(2) > div:nth-child(3) > .p-element:nth-child(1)"
+    );
+    
     // click chọn Vận chuyển giữa các chi nhánh
     await page.click(
       "form.grid > div:nth-child(2) > div:nth-child(3) > .p-element:nth-child(2)"
@@ -146,12 +157,10 @@ router.get("/ben-cat", function (req, res) {
       );
       return tds.map(td => td.innerText);
     });
-
     let chunk_van_chuyen_giua_chi_nhanh = _.chunk(
       van_chuyen_giua_chi_nhanh,
       13
     );
-    let so_luong_don_giua_cac_chi_nhanh = chunk_van_chuyen_giua_chi_nhanh.length
     // END Vận chuyển giữa các chi nhánh
 
     // START Vận chuyển đến nơi đổi vỏ bình
@@ -183,7 +192,6 @@ router.get("/ben-cat", function (req, res) {
       return tds.map(td => td.innerText);
     });
     let chunk_van_chuyen_doi_vo_binh = _.chunk(van_chuyen_doi_vo_binh, 13);
-    let so_luong_don_doi_vo_binh = chunk_van_chuyen_doi_vo_binh.length
     // END Vận chuyển đến nơi đổi vỏ bình
 
     // START Vận chuyển đi chiết nạp
@@ -215,7 +223,6 @@ router.get("/ben-cat", function (req, res) {
       return tds.map(td => td.innerText);
     });
     let chunk_van_chuyen_di_chiet_nap = _.chunk(van_chuyen_di_chiet_nap, 13);
-    let so_luong_don_di_chiet_nap = chunk_van_chuyen_di_chiet_nap.length
     // END Vận chuyển giữa các chi nhánh
 
     // Thống kê xe khách
@@ -499,10 +506,6 @@ router.get("/ben-cat", function (req, res) {
 
     console.log(so_luong_binh_dang_ky_tai_kiem_dinh)
     await browser.close();
-    let don_hang = {
-      [so_hoa_don]: Number(value_so_hoa_don) - so_luong_don_giua_cac_chi_nhanh - so_luong_don_di_chiet_nap - so_luong_don_doi_vo_binh,
-      [so_dieu_phoi]: Number(value_so_dieu_phoi) - so_luong_don_giua_cac_chi_nhanh - so_luong_don_di_chiet_nap - so_luong_don_doi_vo_binh,
-    };
     res.render("bao-cao/ben-cat", {
       data: {
         "Bán buôn": don_hang,

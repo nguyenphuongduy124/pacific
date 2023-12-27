@@ -1,5 +1,11 @@
 const _ = require("lodash");
 
+function delay(time) {
+  return new Promise(function(resolve) { 
+      setTimeout(resolve, time)
+  });
+}
+
 function sortDieuXe(xe, list) {
   let sortable = [];
   let tmp = {};
@@ -51,7 +57,9 @@ function xulyDataDieuXe(dataDieuXe) {
       result[xe][tenDaiLy]["tongSoLuongBinh"] =
         result[xe][tenDaiLy]["tongSoLuongBinh"] + soLuongBinh;
     }
+    // console.log(arrDanhSachDaiLy)
     arrDanhSachDaiLy = [];
+    console.log(result)
     let sort = sortDieuXe(xe, result[xe]);
     result[xe] = sort;
   });
@@ -199,5 +207,6 @@ module.exports = {
   gopDonDaiLy,
   gopKhachHangTrungTen,
   gopDonTheoKhuVuc,
-  getTextInElement
+  getTextInElement,
+  delay
 };
